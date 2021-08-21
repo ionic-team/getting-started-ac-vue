@@ -12,6 +12,7 @@ const authService = new AuthenticationService();
 
 export default () => {
   return {
+    isAuthenticated: (): Promise<boolean> => authService.isAuthenticated(),
     login: (): Promise<void> => authService.login(),
     logout: (): Promise<void> => authService.logout(),
   };

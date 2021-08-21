@@ -213,6 +213,77 @@ If you inspect the login page via the devtools, you will notice a message in the
 
 The problem is that we need to let the native device know which application(s) are allowed to handle navigation to the `msauth://` scheme. To do this, we need to modify our `AndroidManifest.xml` and `Info.plist` files <a href="https://ionic.io/docs/auth-connect/install" target="_blank">as noted here</a>. Use `msauth` in place of `$AUTH_URL_SCHEME`.
 
+## Determine Current Auth Status
+
+Right now, the user is shown both the login and logout buttons, and you don't really know if the user is logged in or not. Let's change that.
+
+Auth Connect includes a method called <a href="https://ionic.io/docs/auth-connect/classes/ionicauth#isauthenticated" target="_blank">`isAuthenticated()`</a>. This method resolves `true` if a valid access token exists, and `false` otherwise. If the current access token has expired, this method will attempt to refresh the token before determining if it should resolve `true` or `false`.
+
+Let's add a line to our return value in `src/use/auth.ts`:
+
+```typescript
+export default () => {
+  return {
+    isAuthenticated: (): Promise<boolean> => authService.isAuthenticated(),
+    login: (): Promise<void> => authService.login(),
+    logout: (): Promise<void> => authService.logout(),
+  };
+};
+```
+
+We will use this in the Tab1 page to display only the Login or the Logout button, depending on the current login status. First, update the bindings on the buttons:
+
+```html
+<ion-button v-if="authenticated === false" @click="loginClicked">Login</ion-button>
+<ion-button v-if="authenticated" @click="logoutClicked">Logout</ion-button>
+```
+
+Notice that we added the `v-if` conditions and also changed the `@click` event bindings. The reason for this is that our click logic is going to do a little more work than before.
+
+What we want to do is:
+
+- upon creating the page, check the current auth status
+- after performing a login or logout operation, refresh the auth status
+
+Here is one way to code all of that:
+
+```typescript
+  setup() {
+    const authenticated = ref<boolean | undefined>();
+    const { login, logout, isAuthenticated } = useAuth();
+
+    const checkAuth = async () => {
+      authenticated.value = await isAuthenticated();
+    };
+
+    const loginClicked = async () => {
+      try {
+        await login();
+        checkAuth();
+      } catch (err) {
+        console.log('Error logging in:', err);
+      }
+    };
+
+    const logoutClicked = async () => {
+      await logout();
+      checkAuth();
+    };
+
+    checkAuth();
+
+    return {
+      authenticated,
+      loginClicked,
+      logoutClicked,
+    };
+  },
+```
+
+Notice the `try ... catch` in `loginClicked()`. This allows us to output a simple message when the login fails if we so desire. For our current app, we will just log it to the console.
+
+At this point, you should see the Login button if you are not logged in and the Logout button if you are. Furthermore, you should see the proper button after refreshing your browser or after successfully logging in or out.
+
 ## Conclusion
 
 At this point, you should have a good idea of how Auth Connect and Identity Vault work together to provide a complete and secure authentication solution. There is still more functionality that can be implemented. Be sure to check out our other documentation to determine how to facilitate specific areas of functionality within your application.
