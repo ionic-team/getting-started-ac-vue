@@ -1,13 +1,14 @@
 {
   "name": "getting-started-ac-vue",
+  "description": "Getting Started with Auth Connect",
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "build": "vue-cli-service build && cap copy",
+    "lint": "vue-cli-service lint",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
     "@capacitor/app": "1.0.2",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "3.2.0",
+    "@ionic/prettier-config": "~2.0.0",
     "@types/jest": "^24.0.19",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
@@ -38,8 +40,11 @@
     "@vue/test-utils": "^2.0.0-0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
+    "husky": "~7.0.1",
+    "prettier": "~2.3.2",
+    "pretty-quick": "~3.1.1",
     "typescript": "^4.3.5",
     "vue-jest": "^5.0.0-0"
   },
-  "description": "An Ionic project"
+  "prettier": "@ionic/prettier-config"
 }
