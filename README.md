@@ -284,6 +284,93 @@ Notice the `try ... catch` in `loginClicked()`. This allows us to output a simpl
 
 At this point, you should see the Login button if you are not logged in and the Logout button if you are. Furthermore, you should see the proper button after refreshing your browser or after successfully logging in or out.
 
+## Guarding the Routes
+
+Let's pretend that Tab2 and Tab3 had super secret information that only logged in users could see (they don't, of course, but we can pretend). We would not want users getting there if they were not currently authenticated.
+
+We can use our newly exposed `isAuthenticated()` function to build a guard for those routes.
+
+Open `src/router/index.ts`. At the top of the file, import `useAuth`.
+
+```typescript
+import useAuth from '@/use/auth';
+
+const { isAuthenticated } = useAuth();
+```
+
+Then add some metadata to the `tab2` and `tab3` routes to indicate that they require authentication:
+
+```typescript
+      {
+        path: 'tab2',
+        component: () => import('@/views/Tab2.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'tab3',
+        component: () => import('@/views/Tab3.vue'),
+        meta: { requiresAuth: true },
+      },
+```
+
+Create a guard function (you _will_ need to add more import statements):
+
+```typescript
+const checkAuthStatus = async (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  if (to.matched.some((r) => r.meta.requiresAuth)) {
+    if (!(await isAuthenticated())) {
+      return next('/');
+    }
+  }
+  next();
+};
+```
+
+Finally, after the `router` is created, but before it is exported, add the guard:
+
+```
+router.beforeEach(checkAuthStatus);
+```
+
+Now if you are not logged in and try to click on tabs 2 or 3, the application will not navigate and you will stay on tab 1. Furthermore, if you try to manually load `http://localhost:8100/tabs/tab2` (or `tab3`), you will be redirected to `tab1`.
+
+## Get the Tokens
+
+We can now log in and out, but what about getting at the tokens that our OIDC provider gave us? There are a handful of methods available that get us wht we need:
+
+- <a href="https://ionic.io/docs/auth-connect/classes/ionicauth#getaccesstoken" target="_blank">`getAccessToken()`</a>
+- <a href="https://ionic.io/docs/auth-connect/classes/ionicauth#getidtoken" target="_blank">`getIdToken()`</a>
+- <a href="https://ionic.io/docs/auth-connect/classes/ionicauth#getrefreshtoken" target="_blank">`getRefreshToken()`</a>
+
+You can use these wherever you need to supply a specific token. For example, if you are accessing a backend API that requires you to include a bearer token (and you probably are if you are using Auth Connect), then you can expose the `getAccessToken()` method and <a href="https://github.com/ionic-team/tea-taster-vue/blob/feature/auth-connect/src/use/backend-api.ts#L15-L22" target="_blank">create in interceptor</a> that adds the token.
+
+Since we don't have a backend API that will need the access token, let's instead modify `src/use/auth.ts` to grab the user's name from the ID token. Here is the code in context. Add the parts you need:
+
+```typescript
+// imports and whatnot up here...
+...
+
+export default () => {
+  const getUserName = async (): Promise<string | undefined> => {
+    const token = await authService.getIdToken();
+    return token && token.name;
+  };
+
+  return {
+    getUserName,
+    isAuthenticated: (): Promise<boolean> => authService.isAuthenticated(),
+    login: (): Promise<void> => authService.login(),
+    logout: (): Promise<void> => authService.logout(),
+  };
+};
+```
+
+As a challenge to you, update the Tab1 page to show the current user's name when they are logged in.
+
 ## Conclusion
 
 At this point, you should have a good idea of how Auth Connect and Identity Vault work together to provide a complete and secure authentication solution. There is still more functionality that can be implemented. Be sure to check out our other documentation to determine how to facilitate specific areas of functionality within your application.
