@@ -1,0 +1,6 @@
+{
+  "appId": "io.ionic.gettingstartedacvue",
+  "appName": "getting-started-ac-vue",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

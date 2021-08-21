@@ -6,14 +6,16 @@
   "scripts": {
     "build": "vue-cli-service build && cap copy",
     "lint": "vue-cli-service lint",
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port=8100",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "@capacitor/android": "3.2.0",
     "@capacitor/app": "1.0.2",
     "@capacitor/core": "3.2.0",
     "@capacitor/haptics": "1.0.2",
+    "@capacitor/ios": "3.2.0",
     "@capacitor/keyboard": "1.0.2",
     "@capacitor/status-bar": "1.0.2",
     "@ionic/vue": "^5.4.0",
