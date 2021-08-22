@@ -371,6 +371,86 @@ export default () => {
 
 As a challenge to you, update the Tab1 page to show the current user's name when they are logged in.
 
+## Use a Token Storage Provider
+
+Up until now, we haven't really been worrying about where the tokens are being stored. By default, Auth Connect is just using localstorage. This has two disadvantages: it is not secure, and on mobile devices the OS can wipe out localstorage any time it feels like it needs a little extra space.
+
+The default token storage provider is OK for development purposes, but it is not a good option for a production application. To rectify this, there are two solid options:
+
+- Create your own service that conforms the the <a href=""https://ionic.io/docs/auth-connect/interfaces/tokenstorageprovider target="\_blank">Token Storage Provider interface</a>.
+- Or, use <a href="https://ionic.io/docs/identity-vault" target="_blank">Identity Vault</a>.
+
+Using Identity Vault is the clear winner here in all categories: security, ease of use, and ease of maintenance.
+
+As such, for our appication we will install identity vault and use it in "secure storage" mode to store the tokens. The first step is to install the product and sync the platforms.
+
+```bash
+npm i @ionic-enterprise/identity-vault
+ionic cap sync
+```
+
+Next we will create a factory that builds either the actual vault if we are on a device or a browser based "vault" that is suitable for development if we are in the browser.
+
+```typescript
+import { isPlatform } from '@ionic/vue';
+import { BrowserVault, IdentityVaultConfig, Vault } from '@ionic-enterprise/identity-vault';
+
+export default () => {
+  const createVault = (config: IdentityVaultConfig): Vault | BrowserVault =>
+    isPlatform('hybrid') ? new Vault(config) : new BrowserVault(config);
+
+  return { createVault };
+};
+```
+
+Why the two vaults? It has to do with the capabilities that are available on each platform. Basically, Android and iOS devices have dedicated secure storage hardware specifically designed for the safe and secure storage of keys. Browsers do not. However, one of the main advantages of the Ionic Framework is that you can develop most of your app in the browser using web technologies. In order to allow the developer to continue with the more efficient browser-based workflow, we provide a light weight `BrowserVault` that just stores the keys in localstorage. This implementation is not intended for production use.
+
+**Note:** if you need to support production deployments in the web, we suggest that rather than using `BrowserVault` that you create your own service that implements the same interface but provides a level of security that you may require in the web. Doing so is beyond the scope of Auth Connect or this documentation.
+
+Now that we have a factory in place to build our vaults, let's instantiate a vault and include it in our Auth Connect configuration.
+
+Create a file called `src/use/vault.ts` with the following contents:
+
+```typescript
+import { DeviceSecurityType, VaultType } from '@ionic-enterprise/identity-vault';
+import useVaultFactory from './vault-factory';
+
+const { createVault } = useVaultFactory();
+const vault = createVault({
+  key: 'io.ionic.gettingstartedacvue',
+  type: VaultType.SecureStorage,
+  deviceSecurityType: DeviceSecurityType.None,
+  lockAfterBackgrounded: 5000,
+  shouldClearVaultAfterTooManyFailedAttempts: true,
+  customPasscodeInvalidUnlockAttempts: 2,
+  unlockVaultOnLoad: false,
+});
+
+export default () => ({ vault });
+```
+
+Then modify `src/use/auth-config.ts` to include the `tokenStorageProvider`:
+
+```typescript
+import { IonicAuthOptions } from '@ionic-enterprise/auth';
+import { isPlatform } from '@ionic/vue';
+import useVault from '@/use/vault';
+
+export default () => {
+  const { vault } = useVault();
+  const isNative = isPlatform('hybrid');
+
+  const config: IonicAuthOptions = {
+    ...
+    tokenStorageProvider: vault,
+  };
+
+  return { config };
+};
+```
+
+Now when you run the application on a device, the device's secure key storage mechanisms are used to store the key rather than `localstorage`. The browser is still using `localstorage`, but the browser implementation is just there for developer convenience.
+
 ## Conclusion
 
 At this point, you should have a good idea of how Auth Connect and Identity Vault work together to provide a complete and secure authentication solution. There is still more functionality that can be implemented. Be sure to check out our other documentation to determine how to facilitate specific areas of functionality within your application.

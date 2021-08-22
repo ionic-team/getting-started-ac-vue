@@ -1,7 +1,9 @@
 import { IonicAuthOptions } from '@ionic-enterprise/auth';
 import { isPlatform } from '@ionic/vue';
+import useVault from '@/use/vault';
 
 export default () => {
+  const { vault } = useVault();
   const isNative = isPlatform('hybrid');
 
   const config: IonicAuthOptions = {
@@ -17,6 +19,7 @@ export default () => {
     platform: isNative ? 'capacitor' : 'web',
     iosWebView: isNative ? 'private' : undefined,
     androidToolbarColor: isNative ? '#337ab7' : undefined,
+    tokenStorageProvider: vault,
   };
 
   return { config };
