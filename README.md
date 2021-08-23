@@ -453,4 +453,8 @@ Now when you run the application on a device, the device's secure key storage me
 
 ## Conclusion
 
-At this point, you should have a good idea of how Auth Connect and Identity Vault work together to provide a complete and secure authentication solution. There is still more functionality that can be implemented. Be sure to check out our other documentation to determine how to facilitate specific areas of functionality within your application.
+At this point, you should have a good idea of how Auth Connect and Identity Vault work together to provide a complete and secure authentication solution. There is still more functionality that can be implemented. Be sure to check out our other documentation and demos to see how to expand on this to offer expanded functionality such as Biometric based authentication.
+
+- <a href="https://ionic.io/docs/auth-connect" target="_blank">Auth Connect</a>
+- <a href="https://ionic.io/docs/identity-vault" target="_blank">Identity Vault</a> - check out its <a href="https://ionic.io/docs/identity-vault/getting-started-vue" target="_blank">Getting Started guide</a> as well.
+- <a href="https://github.com/ionic-team/tea-taster-vue/tree/feature/auth-connect" target="_blank">Tea Taster with Auth Connect and Identity Vault</a>
