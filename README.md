@@ -280,7 +280,7 @@ Here is one way to code all of that:
   },
 ```
 
-Notice the `try ... catch` in `loginClicked()`. This allows us to output a simple message when the login fails if we so desire. For our current app, we will just log it to the console.
+Notice the `try ... catch` in `loginClicked()`. The `login()` will throw an error if the user fails to log in. Production applications should have some kind of handling here, but our sample can get away with simply logging the fact.
 
 At this point, you should see the Login button if you are not logged in and the Logout button if you are. Furthermore, you should see the proper button after refreshing your browser or after successfully logging in or out.
 
@@ -382,7 +382,7 @@ The default token storage provider is OK for development purposes, but it is not
 
 Using Identity Vault is the clear winner here in all categories: security, ease of use, and ease of maintenance.
 
-As such, for our appication we will install identity vault and use it in "secure storage" mode to store the tokens. The first step is to install the product and sync the platforms.
+As such, for our application we will install identity vault and use it in "secure storage" mode to store the tokens. The first step is to install the product and sync the platforms.
 
 ```bash
 npm i @ionic-enterprise/identity-vault
@@ -403,9 +403,7 @@ export default () => {
 };
 ```
 
-Why the two vaults? It has to do with the capabilities that are available on each platform. Basically, Android and iOS devices have dedicated secure storage hardware specifically designed for the safe and secure storage of keys. Browsers do not. However, one of the main advantages of the Ionic Framework is that you can develop most of your app in the browser using web technologies. In order to allow the developer to continue with the more efficient browser-based workflow, we provide a light weight `BrowserVault` that just stores the keys in localstorage. This implementation is not intended for production use.
-
-**Note:** if you need to support production deployments in the web, we suggest that rather than using `BrowserVault` that you create your own service that implements the same interface but provides a level of security that you may require in the web. Doing so is beyond the scope of Auth Connect or this documentation.
+This provides us with a vault that is usable on our devices, or a <a href="https://ionic.io/docs/identity-vault/classes/browservault" target="_blank">fallback vault</a> that will allow us to keep using our browser-based development flow.
 
 Now that we have a factory in place to build our vaults, let's instantiate a vault and include it in our Auth Connect configuration.
 
