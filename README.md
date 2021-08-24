@@ -377,7 +377,7 @@ Up until now, we haven't really been worrying about where the tokens are being s
 
 The default token storage provider is OK for development purposes, but it is not a good option for a production application. To rectify this, there are two solid options:
 
-- Create your own service that conforms the the <a href=""https://ionic.io/docs/auth-connect/interfaces/tokenstorageprovider target="\_blank">Token Storage Provider interface</a>.
+- Create your own service that conforms the the <a href="https://ionic.io/docs/auth-connect/interfaces/tokenstorageprovider" target="_blank">Token Storage Provider interface</a>.
 - Or, use <a href="https://ionic.io/docs/identity-vault" target="_blank">Identity Vault</a>.
 
 Using Identity Vault is the clear winner here in all categories: security, ease of use, and ease of maintenance.
