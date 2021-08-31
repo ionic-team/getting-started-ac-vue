@@ -61,7 +61,7 @@ If you have already performed that step for your production application, you can
 You can now install Auth Connect and sync the platforms:
 
 ```bash
-npm install @ionic-enterprise/auth-connect
+npm install @ionic-enterprise/auth
 ionic cap sync
 ```
 
