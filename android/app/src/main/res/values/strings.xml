@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">getting-started-ac-vue</string>
-    <string name="title_activity_main">getting-started-ac-vue</string>
+    <string name="app_name">AC Tutorial</string>
+    <string name="title_activity_main">AC Tutorial</string>
     <string name="package_name">io.ionic.gettingstartedacvue</string>
     <string name="custom_url_scheme">io.ionic.gettingstartedacvue</string>
 </resources>
