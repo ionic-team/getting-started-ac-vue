@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.gettingstartedacvue',
-  appName: 'getting-started-ac-vue',
+  appName: 'AC Tutorial',
   webDir: 'dist',
   bundledWebRuntime: false,
 };

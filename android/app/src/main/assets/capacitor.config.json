@@ -1,6 +1,6 @@
 {
-	"appId": "io.ionic.gettingstartedacvue",
-	"appName": "getting-started-ac-vue",
-	"webDir": "dist",
-	"bundledWebRuntime": false
+  "appId": "io.ionic.gettingstartedacvue",
+  "appName": "AC Tutorial",
+  "webDir": "dist",
+  "bundledWebRuntime": false
 }
