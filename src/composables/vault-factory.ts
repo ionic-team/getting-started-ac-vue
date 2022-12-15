@@ -1,5 +1,5 @@
-import { isPlatform } from '@ionic/vue';
 import { BrowserVault, IdentityVaultConfig, Vault } from '@ionic-enterprise/identity-vault';
+import { isPlatform } from '@ionic/vue';
 
 export default () => {
   const createVault = (config: IdentityVaultConfig): Vault | BrowserVault =>

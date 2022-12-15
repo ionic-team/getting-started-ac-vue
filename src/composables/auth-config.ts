@@ -1,6 +1,6 @@
+import useVault from '@/composables/vault';
 import { IonicAuthOptions } from '@ionic-enterprise/auth';
 import { isPlatform } from '@ionic/vue';
-import useVault from '@/use/vault';
 
 export default () => {
   const { vault } = useVault();

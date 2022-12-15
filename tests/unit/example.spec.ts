@@ -1,10 +1,11 @@
 import { mount } from '@vue/test-utils';
-import Tab1 from '@/views/Tab1.vue';
+import Tab1Page from '@/views/Tab1Page.vue';
 
-describe('Tab1.vue', () => {
-  it('renders tab 1 view', () => {
-    const wrapper = mount(Tab1);
-    const title = wrapper.findComponent('[data-testid="title"]');
-    expect(title.text()).toMatch('Tab 1');
+jest.mock('@/composables/vault-factory');
+
+describe('Tab1Page.vue', () => {
+  it('renders tab 1 Tab1Page', () => {
+    const wrapper = mount(Tab1Page);
+    expect(wrapper.text()).toMatch('Tab 1');
   });
 });

@@ -8,13 +8,10 @@
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: 'ExploreContainer',
-  props: {
-    name: String,
-  },
-};
+<script setup lang="ts">
+defineProps({
+  name: String,
+});
 </script>
 
 <style scoped>
