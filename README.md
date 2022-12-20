@@ -10,6 +10,10 @@ In this tutorial, you will learn how to:
 - Obtain the tokens from Auth Connect
 - Integrate Identity Vault with Auth Connect
 
+:::note
+The source code for the Ionic application created in this tutorial can be found [here](https://github.com/ionic-team/getting-started-ac-vue)
+:::
+
 ## Generate the Application
 
 The first step to take is to generate the application:
@@ -598,4 +602,4 @@ At this point, you should have a good idea of how Auth Connect and Identity Vaul
 
 - <a href="https://ionic.io/docs/auth-connect" target="_blank">Auth Connect</a>
 - <a href="https://ionic.io/docs/identity-vault" target="_blank">Identity Vault</a> - check out its <a href="https://ionic.io/docs/identity-vault/getting-started-vue" target="_blank">Getting Started guide</a> as well.
-- <a href="https://github.com/ionic-team/tea-taster-vue/tree/feature/auth-connect" target="_blank">Tea Taster with Auth Connect and Identity Vault</a>
+- <a href="https://github.com/ionic-enterprise/tea-taster-vue/tree/feature/auth-connect" target="_blank">Tea Taster with Auth Connect and Identity Vault</a>
