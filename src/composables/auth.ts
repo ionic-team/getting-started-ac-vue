@@ -1,6 +1,6 @@
 import { Auth0Provider, AuthConnect, AuthResult, ProviderOptions, TokenType } from '@ionic-enterprise/auth';
 import { isPlatform } from '@ionic/vue';
-import useSessionVault from './useSessionVault';
+import { useSessionVault } from './session-vault';
 
 const isNative = isPlatform('hybrid');
 const provider = new Auth0Provider();
@@ -107,7 +107,7 @@ const logout = async (): Promise<void> => {
 
 initialize();
 
-export default () => ({
+export const useAuth = () => ({
   getAccessToken,
   getUserName,
   isAuthenticated,

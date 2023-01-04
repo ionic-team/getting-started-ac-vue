@@ -1,6 +1,6 @@
 import { AuthResult } from '@ionic-enterprise/auth';
 import { DeviceSecurityType, VaultType } from '@ionic-enterprise/identity-vault';
-import useVaultFactory from './useVaultFactory';
+import { useVaultFactory } from './vault-factory';
 
 const key = 'auth-result';
 
@@ -27,7 +27,7 @@ const setSession = (value: AuthResult | undefined): Promise<void> => {
   return vault.setValue(key, value);
 };
 
-export default () => ({
+export const useSessionVault = () => ({
   clearSessionVault,
   getSession,
   setSession,
