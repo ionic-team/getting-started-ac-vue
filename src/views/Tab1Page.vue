@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { IonButton, IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import useAuth from '@/composables/auth';
+import useAuth from '@/composables/useAuth';
 import { ref } from 'vue';
 
 const authenticated = ref<boolean | undefined>();

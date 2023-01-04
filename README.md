@@ -87,7 +87,7 @@ const options: ProviderOptions = {
   logoutUrl: isNative ? '' : '',
 };
 
-export default () => ({});
+export const useAuth = () => ({});
 ```
 
 ### Auth Connect Options
@@ -170,7 +170,7 @@ const initialize = async (): Promise<void> => {
 
 initialize();
 
-export default () => ({});
+export const useAuth = () => ({});
 ```
 
 This will get Auth Connect ready to use within our application. Notice that this is also where we supply any platform specific Auth Connect options. Right now, the `logLevel` is set to `DEBUG` since this is a demo application. In a production environment, we probably would set it to `DEBUG` in development and `ERROR` in production.
@@ -189,7 +189,7 @@ import { isPlatform } from '@ionic/vue';
 ...
 const provider = new Auth0Provider();
 ...
-export default () => ({});
+export const useAuth = () => ({});
 ```
 
 ### Login and Logout
@@ -213,7 +213,7 @@ const login = async (): Promise<void> => {
   authResult = await AuthConnect.login(provider, options);
 }
 ...
-export default () => ({
+export const auth = () => ({
   login
 });
 ```
@@ -229,7 +229,7 @@ const logout = async (): Promise<void> => {
   }
 };
 ...
-export default () => ({
+export const useAuth = () => ({
   login,
   logout,
 });
@@ -241,12 +241,12 @@ To test these new function, replace the `ExploreContainer` with "Login" and "Log
 <ion-button @click="login">Login</ion-button> <ion-button @click="logout">Logout</ion-button>
 ```
 
-Within the `script` area, import `useAuth` and expose the `login` and `logout` functions:
+Within the `script setup` area, import `useAuth` and expose the `login` and `logout` functions:
 
 ```vue
 <script setup lang="ts">
 import { IonButton, IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import useAuth from '@/use/auth';
+import { useAuth } from '@/composables/useAuth';
 
 const { login, logout } = useAuth();
 </script>
@@ -269,7 +269,7 @@ The problem is that we need to let the native device know which application(s) a
 
 Right now, the user is shown both the login and logout buttons, and you don't really know if the user is logged in or not. Let's change that.
 
-A simple strategy to use is if we have an `AuthResult` then we are logged in, otherwise we are not. Add code to do that in `src/composables/auth.ts`. Ignore the extra complexity with the `getAuthResult()` function. We will expand on that as we go.
+A simple strategy to use is if we have an `AuthResult` then we are logged in, otherwise we are not. Add code to do that in `src/composables/useAuth.ts`. Ignore the extra complexity with the `getAuthResult()` function. We will expand on that as we go.
 
 ```typescript
 const getAuthResult = async (): Promise<AuthResult | undefined> => {
@@ -281,7 +281,7 @@ const isAuthenticated = async (): Promise<boolean> => {
   return !!(await getAuthResult());
 }
 ...
-export default () => ({
+export const auth = () => ({
   isAuthenticated,
   login,
   logout,
@@ -356,7 +356,7 @@ const getUserName = async (): Promise<string | undefined> => {
 
 **Note:** the format and data stored in the ID token may changed based on your provider and configuration. Check the documentation and configuration of your own provider for details.
 
-Add these to `src/composables/auth.ts` and export them at the end of the file like we did the other functions.
+Add these to `src/composables/useAuth.ts` and export them at the end of the file like we did the other functions.
 
 You can use these wherever you need to supply a specific token. For example, if you are accessing a backend API that requires you to include a bearer token (and you probably are if you are using Auth Connect), then you can use the `getAccessToken()` method and <a href="https://github.com/ionic-team/tea-taster-vue/blob/feature/auth-connect/src/use/backend-api.ts#L15-L22" target="_blank">create in interceptor</a> that adds the token.
 
@@ -366,7 +366,7 @@ We don't need an interceptor for this app, but as a challenge to you, update the
 
 In a typical OIDC implementation, access tokens are very short lived. In such a case, it is common to use a longer lived refresh token to obtain a new `AuthResult`.
 
-Let's add a function to `src/composables/auth.ts` that does the refresh, and then modify `getAuthResult()` to call it when needed.
+Let's add a function to `src/composables/useAuth.ts` that does the refresh, and then modify `getAuthResult()` to call it when needed.
 
 ```typescript
 const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefined> => {
@@ -395,7 +395,7 @@ Now anything using `getAuthResult()` to get the current auth result will automat
 
 ## Store the Auth Result
 
-Up until this point, we have been storing our `AuthResult` in a local state variable in `src/composables/auth.ts`. This has a couple of disadvantages:
+Up until this point, we have been storing our `AuthResult` in a local state variable in `src/composables/useAuth.ts`. This has a couple of disadvantages:
 
 - Our tokens could show up in a stack trace.t
 - Our tokens do not survive a browser refresh or application restart.
@@ -408,13 +408,13 @@ For our application we will install identity vault and use it in "secure storage
 npm i @ionic-enterprise/identity-vault
 ```
 
-Next we will create a factory that builds either the actual vault if we are on a device or a browser based "vault" that is suitable for development if we are in the browser. The following code should go in `src/composables/vault-factory.ts`.
+Next we will create a factory that builds either the actual vault if we are on a device or a browser based "vault" that is suitable for development if we are in the browser. The following code should go in `src/composables/useVaultFactory.ts`.
 
 ```typescript
 import { isPlatform } from '@ionic/vue';
 import { BrowserVault, IdentityVaultConfig, Vault } from '@ionic-enterprise/identity-vault';
 
-export default () => {
+export useVaultFactory = () => {
   const createVault = (config: IdentityVaultConfig): Vault | BrowserVault =>
     isPlatform('hybrid') ? new Vault(config) : new BrowserVault(config);
 
@@ -426,12 +426,12 @@ This provides us with a secure vault on our devices, or a <a href="https://ionic
 
 Now that we have a factory in place to build our vaults, let's create some functions that allow us to manage our authentication result.
 
-Create a file called `src/composable/session-vault.ts` with the following contents:
+Create a file called `src/composables/useSessionVault.ts` with the following contents:
 
 ```typescript
 import { AuthResult } from '@ionic-enterprise/auth';
 import { DeviceSecurityType, VaultType } from '@ionic-enterprise/identity-vault';
-import useVaultFactory from './vault-factory';
+import { useVaultFactory } from './useVaultFactory';
 
 const key = 'auth-result';
 
@@ -458,19 +458,19 @@ const setSession = (value: AuthResult | undefined): Promise<void> => {
   return vault.setValue(key, value);
 };
 
-export default () => ({
+export const useSessionVault () => ({
   clear,
   getSession,
   setSession,
 });
 ```
 
-Then modify `src/composables/auth.ts` to use the `sessionVault` functions. The goal is to no longer store the auth result in a session variable. Instead, we will use the session vault to store the result and retrieve it from the vault as needed.
+Then modify `src/composables/useAuth.ts` to use the `sessionVault` functions. The goal is to no longer store the auth result in a session variable. Instead, we will use the session vault to store the result and retrieve it from the vault as needed.
 
 Remove the `let authResult: AuthResult | undefined;` line and replace it with the following:
 
 ```typescript
-import useSessionVault from './session-vault';
+import { useSessionVault } from './useSessionVault';
 
 const { clearSessionVault, getSession, setSession } = useSessionVault();
 ```
@@ -551,7 +551,7 @@ We can use our `isAuthenticated()` function to build a guard for those routes.
 Open `src/router/index.ts`. At the top of the file, import `useAuth`.
 
 ```typescript
-import useAuth from '@/composables/auth';
+import { useAuth } from '@/composables/useAuth';
 
 const { isAuthenticated } = useAuth();
 ```

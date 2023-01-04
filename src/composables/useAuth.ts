@@ -1,6 +1,6 @@
 import { Auth0Provider, AuthConnect, AuthResult, ProviderOptions, TokenType } from '@ionic-enterprise/auth';
 import { isPlatform } from '@ionic/vue';
-import useSessionVault from './session-vault';
+import useSessionVault from './useSessionVault';
 
 const isNative = isPlatform('hybrid');
 const provider = new Auth0Provider();

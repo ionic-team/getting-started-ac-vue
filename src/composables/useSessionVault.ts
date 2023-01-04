@@ -1,6 +1,6 @@
 import { AuthResult } from '@ionic-enterprise/auth';
 import { DeviceSecurityType, VaultType } from '@ionic-enterprise/identity-vault';
-import useVaultFactory from './vault-factory';
+import useVaultFactory from './useVaultFactory';
 
 const key = 'auth-result';
 

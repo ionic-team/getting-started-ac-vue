@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { NavigationGuardNext, RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
 import TabsPage from '../views/TabsPage.vue';
-import useAuth from '@/composables/auth';
+import useAuth from '@/composables/useAuth';
 
 const { isAuthenticated } = useAuth();
 
