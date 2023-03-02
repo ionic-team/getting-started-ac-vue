@@ -19,11 +19,11 @@ const clearSessionVault = (): Promise<void> => {
   return vault.clear();
 };
 
-const getSession = (): Promise<AuthResult | undefined> => {
-  return vault.getValue(key) as Promise<AuthResult | undefined>;
+const getSession = (): Promise<AuthResult | null> => {
+  return vault.getValue<AuthResult>(key);
 };
 
-const setSession = (value: AuthResult | undefined): Promise<void> => {
+const setSession = (value: AuthResult): Promise<void> => {
   return vault.setValue(key, value);
 };
 

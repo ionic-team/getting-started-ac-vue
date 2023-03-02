@@ -29,7 +29,7 @@ import { IonButton, IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from 
 import { useAuth } from '@/composables/auth';
 import { ref } from 'vue';
 
-const authenticated = ref<boolean | undefined>();
+const authenticated = ref<boolean>();
 const user = ref<string | undefined>();
 const token = ref<string | undefined>();
 const { login, logout, getAccessToken, getUserName, isAuthenticated } = useAuth();

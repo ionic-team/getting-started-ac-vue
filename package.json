@@ -12,11 +12,11 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@capacitor/android": "~4.6.3",
+    "@capacitor/android": "~4.7.0",
     "@capacitor/app": "4.1.1",
-    "@capacitor/core": "~4.6.3",
+    "@capacitor/core": "~4.7.0",
     "@capacitor/haptics": "4.1.0",
-    "@capacitor/ios": "~4.6.3",
+    "@capacitor/ios": "~4.7.0",
     "@capacitor/keyboard": "~4.1.1",
     "@capacitor/status-bar": "4.1.1",
     "@ionic-enterprise/auth": "~4.0.0-dev-20221207T204515.0",
@@ -29,7 +29,7 @@
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
-    "@capacitor/cli": "~4.6.3",
+    "@capacitor/cli": "~4.7.0",
     "@ionic/prettier-config": "~2.0.0",
     "@types/jest": "^27.0.2",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
@@ -47,7 +47,7 @@
     "babel-jest": "^27.3.1",
     "cypress": "^8.7.0",
     "eslint": "^8.4.1",
-    "eslint-plugin-vue": "~9.8.0",
+    "eslint-plugin-vue": "~9.9.0",
     "husky": "~8.0.2",
     "jest": "^27.3.1",
     "prettier": "~2.8.1",

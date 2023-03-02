@@ -152,13 +152,13 @@ const performInit = async (): Promise<void> => {
       webView: 'private',
     },
     web: {
-      implicitLogin: 'popup',
+      uiMode: 'popup',
       authFlow: 'implicit',
     },
   });
 };
 
-let initializing: Promise<void> | undefined;
+let initializing: Promise<void>;
 const initialize = async (): Promise<void> => {
   if (!initializing) {
     initializing = new Promise((resolve) => {
@@ -206,7 +206,7 @@ Add the following code to `src/composables/auth.ts`:
 import { Auth0Provider, AuthConnect, AuthResult, ProviderOptions } from '@ionic-enterprise/auth';
 import { isPlatform } from '@ionic/vue';
 ...
-let authResult: AuthResult | undefined;
+let authResult: AuthResult | null = null;
 ...
 const login = async (): Promise<void> => {
   await initialize();
@@ -225,7 +225,7 @@ const logout = async (): Promise<void> => {
   await initialize();
   if (authResult) {
     await AuthConnect.logout(provider, authResult);
-    authResult = undefined;
+    authResult = null;
   }
 };
 ...
@@ -272,7 +272,7 @@ Right now, the user is shown both the login and logout buttons, and you don't re
 A simple strategy to use is if we have an `AuthResult` then we are logged in, otherwise we are not. Add code to do that in `src/composables/useAuth.ts`. Ignore the extra complexity with the `getAuthResult()` function. We will expand on that as we go.
 
 ```typescript
-const getAuthResult = async (): Promise<AuthResult | undefined> => {
+const getAuthResult = async (): Promise<AuthResult | null> => {
   return authResult;
 }
 
@@ -305,7 +305,7 @@ What we want to do in the `script setup` node of the `Tab1Page` is:
 Here is one way to code all of that. Integrate this into the existing `Tab1Page` code.
 
 ```typescript
-const authenticated = ref<boolean | undefined>();
+const authenticated = ref<boolean>();
 const { login, logout, isAuthenticated } = useAuth();
 
 const checkAuth = async () => {
@@ -369,8 +369,8 @@ In a typical OIDC implementation, access tokens are very short lived. In such a 
 Let's add a function to `src/composables/auth.ts` that does the refresh, and then modify `getAuthResult()` to call it when needed.
 
 ```typescript
-const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefined> => {
-  let newAuthResult: AuthResult | undefined;
+const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | null> => {
+  let newAuthResult: AuthResult | null;
 
   if (await AuthConnect.isRefreshTokenAvailable(authResult)) {
     try {
@@ -383,7 +383,7 @@ const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefin
   return newAuthResult;
 };
 
-const getAuthResult = async (): Promise<AuthResult | undefined> => {
+const getAuthResult = async (): Promise<AuthResult | null> => {
   if (authResult && (await AuthConnect.isAccessTokenExpired(authResult))) {
     authResult = await refreshAuth(authResult);
   }
@@ -450,11 +450,11 @@ const clear = (): Promise<void> => {
   return vault.clear();
 };
 
-const getSession = (): Promise<AuthResult | undefined> => {
-  return vault.getValue(key) as <AuthResult | undefined>;
+const getSession = (): Promise<AuthResult | null> => {
+  return vault.getValue<AuthResult>(key);
 };
 
-const setSession = (value: AuthResult | undefined): Promise<void> => {
+const setSession = (value: AuthResult): Promise<void> => {
   return vault.setValue(key, value);
 };
 
@@ -467,7 +467,7 @@ export const useSessionVault () => ({
 
 Then modify `src/composables/auth.ts` to use the `sessionVault` functions. The goal is to no longer store the auth result in a session variable. Instead, we will use the session vault to store the result and retrieve it from the vault as needed.
 
-Remove the `let authResult: AuthResult | undefined;` line and replace it with the following:
+Remove the `let authResult: AuthResult | null;` line and replace it with the following:
 
 ```typescript
 import { useSessionVault } from './session-vault';
@@ -478,7 +478,7 @@ const { clearSessionVault, getSession, setSession } = useSessionVault();
 Create a new local function called `saveAuthResult()`:
 
 ```typescript
-const saveAuthResult = async (authResult: AuthResult | undefined): Promise<void> => {
+const saveAuthResult = async (authResult: AuthResult | null): Promise<void> => {
   if (authResult) {
     await setSession(authResult);
   } else {
@@ -490,8 +490,8 @@ const saveAuthResult = async (authResult: AuthResult | undefined): Promise<void>
 Modify `refreshAuth` to save the results of an attempted refresh:
 
 ```typescript
-const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefined> => {
-  let newAuthResult: AuthResult | undefined;
+const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | null> => {
+  let newAuthResult: AuthResult | null;
 
   if (await AuthConnect.isRefreshTokenAvailable(authResult)) {
     try {
@@ -512,7 +512,7 @@ const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefin
 Modify `getAuthResult()` to obtain the auth result from the vault:
 
 ```typescript
-const getAuthResult = async (): Promise<AuthResult | undefined> => {
+const getAuthResult = async (): Promise<AuthResult | null> => {
   let authResult = await getSession();
   if (authResult && (await AuthConnect.isAccessTokenExpired(authResult))) {
     authResult = await refreshAuth(authResult);
@@ -535,7 +535,7 @@ const logout = async (): Promise<void> => {
   const authResult = await getAuthResult();
   if (authResult) {
     await AuthConnect.logout(provider, authResult);
-    await saveAuthResult(undefined);
+    await saveAuthResult(null);
   }
 };
 ```

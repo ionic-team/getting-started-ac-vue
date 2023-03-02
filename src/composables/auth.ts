@@ -4,7 +4,7 @@ import { useSessionVault } from './session-vault';
 
 const isNative = isPlatform('hybrid');
 const provider = new Auth0Provider();
-let initializing: Promise<void> | undefined;
+let initializing: Promise<void>;
 const { clearSessionVault, getSession, setSession } = useSessionVault();
 
 const options: ProviderOptions = {
@@ -24,7 +24,7 @@ const performInit = async (): Promise<void> => {
       webView: 'private',
     },
     web: {
-      implicitLogin: 'popup',
+      uiMode: 'popup',
       authFlow: 'implicit',
     },
   });
@@ -39,8 +39,8 @@ const initialize = async (): Promise<void> => {
   return initializing;
 };
 
-const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefined> => {
-  let newAuthResult: AuthResult | undefined;
+const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | null> => {
+  let newAuthResult: AuthResult | null = null;
 
   if (await AuthConnect.isRefreshTokenAvailable(authResult)) {
     try {
@@ -48,13 +48,13 @@ const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | undefin
     } catch (err) {
       null;
     }
-    saveAuthResult(newAuthResult);
   }
+  saveAuthResult(newAuthResult);
 
   return newAuthResult;
 };
 
-const saveAuthResult = async (authResult: AuthResult | undefined): Promise<void> => {
+const saveAuthResult = async (authResult: AuthResult | null): Promise<void> => {
   if (authResult) {
     await setSession(authResult);
   } else {
@@ -62,7 +62,7 @@ const saveAuthResult = async (authResult: AuthResult | undefined): Promise<void>
   }
 };
 
-const getAuthResult = async (): Promise<AuthResult | undefined> => {
+const getAuthResult = async (): Promise<AuthResult | null> => {
   let authResult = await getSession();
   if (authResult && (await AuthConnect.isAccessTokenExpired(authResult))) {
     authResult = await refreshAuth(authResult);
@@ -101,7 +101,7 @@ const logout = async (): Promise<void> => {
   const authResult = await getAuthResult();
   if (authResult) {
     await AuthConnect.logout(provider, authResult);
-    await saveAuthResult(undefined);
+    await saveAuthResult(null);
   }
 };
 
