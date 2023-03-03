@@ -263,7 +263,7 @@ You should be able to login and and logout successfully.
 
 Build the application for a native device and try the login there as well. You should notice that this does not work on your device.
 
-The problem is that we need to let the native device know which application(s) are allowed to handle navigation to the `msauth://` scheme. To do this, we need to modify our `AndroidManifest.xml` and `Info.plist` files <a href="https://ionic.io/docs/auth-connect/install" target="_blank">as noted here</a>. Use `msauth` in place of `$AUTH_URL_SCHEME`.
+The problem is that we need to let the native device know which application(s) are allowed to handle navigation to the `msauth://` scheme. To do this, we need to modify our `android/app/build.gradle` and `ios/App/App/Info.plist` files <a href="https://ionic.io/docs/auth-connect/install" target="_blank">as noted here</a>. In the `Info.plist` file, use `msauth` in place of `$AUTH_URL_SCHEME`.
 
 ### Determine Current Auth Status
 
