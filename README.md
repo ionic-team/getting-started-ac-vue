@@ -235,10 +235,11 @@ export const useAuth = () => ({
 });
 ```
 
-To test these new function, replace the `ExploreContainer` with "Login" and "Logout" buttons in the `src/views/Tab1Page.vue` file. :
+To test these new function, replace the `ExploreContainer` with "Login" and "Logout" buttons in the `src/views/Tab1Page.vue` file:
 
 ```html
-<ion-button @click="login">Login</ion-button> <ion-button @click="logout">Logout</ion-button>
+<ion-button @click="logout">Logout</ion-button>
+<ion-button @click="login">Login</ion-button>
 ```
 
 Within the `script setup` area, import `useAuth` and expose the `login` and `logout` functions:
@@ -269,7 +270,7 @@ The problem is that we need to let the native device know which application(s) a
 
 Right now, the user is shown both the login and logout buttons, and you don't really know if the user is logged in or not. Let's change that.
 
-A simple strategy to use is if we have an `AuthResult` then we are logged in, otherwise we are not. Add code to do that in `src/composables/useAuth.ts`. Ignore the extra complexity with the `getAuthResult()` function. We will expand on that as we go.
+A simple strategy to use is if we have an `AuthResult` then we are logged in, otherwise we are not. Add code to do that in `src/composables/auth.ts`. Ignore the extra complexity with the `getAuthResult()` function. We will expand on that as we go.
 
 ```typescript
 const getAuthResult = async (): Promise<AuthResult | null> => {
@@ -291,11 +292,11 @@ export const auth = () => ({
 Use this in the Tab1Page to display only the Login or the Logout button, depending on the current login status. First, update the bindings on the buttons:
 
 ```html
-<ion-button v-if="authenticated === false" @click="loginClicked">Login</ion-button>
 <ion-button v-if="authenticated" @click="logoutClicked">Logout</ion-button>
+<ion-button v-else @click="loginClicked">Login</ion-button>
 ```
 
-Notice the newly added `v-if` conditions. Also notice the changes to the `@click` event bindings. The reason for this is that our click logic is going to do a little more work than before.
+Notice the newly added `v-if` and `v-else` conditions. Also notice the changes to the `@click` event bindings. The reason for this is that our click logic is going to do a little more work than before.
 
 What we want to do in the `script setup` node of the `Tab1Page` is:
 
@@ -370,7 +371,7 @@ Let's add a function to `src/composables/auth.ts` that does the refresh, and the
 
 ```typescript
 const refreshAuth = async (authResult: AuthResult): Promise<AuthResult | null> => {
-  let newAuthResult: AuthResult | null;
+  let newAuthResult: AuthResult | null = null;
 
   if (await AuthConnect.isRefreshTokenAvailable(authResult)) {
     try {
@@ -414,7 +415,7 @@ Next we will create a factory that builds either the actual vault if we are on a
 import { isPlatform } from '@ionic/vue';
 import { BrowserVault, IdentityVaultConfig, Vault } from '@ionic-enterprise/identity-vault';
 
-export useVaultFactory = () => {
+export const useVaultFactory = () => {
   const createVault = (config: IdentityVaultConfig): Vault | BrowserVault =>
     isPlatform('hybrid') ? new Vault(config) : new BrowserVault(config);
 
@@ -446,7 +447,7 @@ const vault = createVault({
   unlockVaultOnLoad: false,
 });
 
-const clear = (): Promise<void> => {
+const clearSession = (): Promise<void> => {
   return vault.clear();
 };
 
@@ -458,8 +459,8 @@ const setSession = (value: AuthResult): Promise<void> => {
   return vault.setValue(key, value);
 };
 
-export const useSessionVault () => ({
-  clear,
+export const useSessionVault = () => ({
+  clearSession,
   getSession,
   setSession,
 });
@@ -472,7 +473,7 @@ Remove the `let authResult: AuthResult | null;` line and replace it with the fol
 ```typescript
 import { useSessionVault } from './session-vault';
 
-const { clearSessionVault, getSession, setSession } = useSessionVault();
+const { clearSession, getSession, setSession } = useSessionVault();
 ```
 
 Create a new local function called `saveAuthResult()`:
@@ -482,7 +483,7 @@ const saveAuthResult = async (authResult: AuthResult | null): Promise<void> => {
   if (authResult) {
     await setSession(authResult);
   } else {
-    await clearSessionVault();
+    await clearSession();
   }
 };
 ```
