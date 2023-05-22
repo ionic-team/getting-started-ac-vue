@@ -4,7 +4,9 @@ const config: CapacitorConfig = {
   appId: 'io.ionic.gettingstartedacvue',
   appName: 'AC Tutorial',
   webDir: 'dist',
-  bundledWebRuntime: false,
+  server: {
+    androidScheme: 'https',
+  },
 };
 
 export default config;

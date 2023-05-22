@@ -33,7 +33,9 @@ const config: CapacitorConfig = {
   appId: 'io.ionic.gettingstartedacvue',
   appName: 'getting-started-ac-vue',
   webDir: 'dist',
-  bundledWebRuntime: false
+  server: {
+    androidScheme: 'https',
+  },
 };
 
 export default config;
@@ -49,9 +51,9 @@ ionic cap add ios
 
 Finally, in order to ensure that a `cap sync` is run with each build, add it to the build script in the `package.json` file as such:
 
-```JSON
+```json
   "scripts": {
-    "build": "vue-cli-service build && cap sync",
+    "build": "vue-tsc && vite build && cap sync",
     ...
   },
 ```
@@ -116,15 +118,17 @@ const options: ProviderOptions = {
 };
 ```
 
-The web redirect for development is on port `8100`. Vue uses port `8080` by default, so we will need to make a minor change to our `package.json` file as well:
+The web redirect for development is on port `8100`. Vue uses port `5173` by default, so we will need to make a minor change to our `package.json` file as well:
 
 ```json
   "scripts": {
-    "build": "vue-cli-service build && cap sync",
-    "lint": "vue-cli-service lint",
-    "serve": "vue-cli-service serve --port=8100",
-    "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e"
+    "build": "vue-tsc && vite build && cap sync",
+    "dev": "vite --port=8100",
+    "lint": "eslint",
+    "prepare": "husky install",
+    "preview": "vite preview",
+    "test:e2e": "cypress run",
+    "test:unit": "vitest"
   },
 ```
 
@@ -238,8 +242,7 @@ export const useAuth = () => ({
 To test these new function, replace the `ExploreContainer` with "Login" and "Logout" buttons in the `src/views/Tab1Page.vue` file:
 
 ```html
-<ion-button @click="logout">Logout</ion-button>
-<ion-button @click="login">Login</ion-button>
+<ion-button @click="logout">Logout</ion-button> <ion-button @click="login">Login</ion-button>
 ```
 
 Within the `script setup` area, import `useAuth` and expose the `login` and `logout` functions:
@@ -601,6 +604,14 @@ Now if you are not logged in and try to click on tabs 2 or 3, the application wi
 
 At this point, you should have a good idea of how Auth Connect and Identity Vault work together to provide a complete and secure authentication solution. There is still more functionality that can be implemented. Be sure to check out our other documentation and demos to see how to expand on this to offer expanded functionality such as Biometric based authentication.
 
-- <a href="https://ionic.io/docs/auth-connect" target="_blank">Auth Connect</a>
-- <a href="https://ionic.io/docs/identity-vault" target="_blank">Identity Vault</a> - check out its <a href="https://ionic.io/docs/identity-vault/getting-started-vue" target="_blank">Getting Started guide</a> as well.
-- <a href="https://github.com/ionic-enterprise/tea-taster-vue/tree/feature/auth-connect" target="_blank">Tea Taster with Auth Connect and Identity Vault</a>
+- <a href="https://ionic.io/docs/auth-connect" target="_blank">
+    Auth Connect
+  </a>
+- <a href="https://ionic.io/docs/identity-vault" target="_blank">
+    Identity Vault
+  </a> - check out its <a href="https://ionic.io/docs/identity-vault/getting-started-vue" target="_blank">
+    Getting Started guide
+  </a> as well.
+- <a href="https://github.com/ionic-enterprise/tea-taster-vue/tree/feature/auth-connect" target="_blank">
+    Tea Taster with Auth Connect and Identity Vault
+  </a>
