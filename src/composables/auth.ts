@@ -16,8 +16,6 @@ const options: ProviderOptions = {
   scope: import.meta.env.VITE_SCOPE,
 };
 
-console.log('logout', import.meta.env.VITE_LOGOUTURLWEB);
-
 const performInit = async (): Promise<void> => {
   await AuthConnect.setup({
     platform: isNative ? 'capacitor' : 'web',
