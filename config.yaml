@@ -1,5 +1,5 @@
 vars:
-  SCHEME:
+  AUTH_URL_SCHEME:
     default: 'msauth'
 
 platforms:
@@ -11,7 +11,7 @@ platforms:
             defaultConfig:
         insertType: 'variable'
         insert:
-          - manifestPlaceholders: "['AUTH_URL_SCHEME': '$SCHEME']"
+          - manifestPlaceholders: "['AUTH_URL_SCHEME': '$AUTH_URL_SCHEME']"
   ios:
     targets:
       App:
@@ -20,4 +20,4 @@ platforms:
           entries:
             - CFBundleURLTypes:
                 - CFBundleURLSchemes:
-                    - $SCHEME
+                    - $AUTH_URL_SCHEME
