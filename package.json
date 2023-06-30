@@ -4,13 +4,16 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "vue-tsc && vite build && cap sync",
+    "build": "npm run clean && npm run trapeze && npm run build:web && cap sync",
+    "build:web": "vue-tsc && vite build",
+    "clean": "git checkout android/app/build.gradle android/app/src/main/AndroidManifest.xml ios/App/App/Info.plist",
     "dev": "vite --port=8100",
     "lint": "eslint",
     "prepare": "husky install",
     "preview": "vite preview",
     "test:e2e": "cypress run",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "trapeze": "(export $(cat .env | xargs) && trapeze run -y config.yaml)"
   },
   "dependencies": {
     "@capacitor/android": "^5.0.0",
@@ -32,6 +35,7 @@
   "devDependencies": {
     "@capacitor/cli": "^5.0.0",
     "@ionic/prettier-config": "~3.0.0",
+    "@trapezedev/configure": "~7.0.10",
     "@vitejs/plugin-legacy": "^4.0.2",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-typescript": "^11.0.2",
